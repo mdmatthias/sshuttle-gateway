@@ -1,0 +1,21 @@
+services:
+  sshuttle-gateway:
+    build: .
+    container_name: sshuttle-gateway
+    environment:
+      - SSH_REMOTE
+    volumes:
+      - ~/.ssh:/mnt/ssh:ro
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    restart: unless-stopped
+
+  test-app:
+    container_name: test-app
+    build:
+      context: .
+      dockerfile: Dockerfile.test-app
+    network_mode: "service:sshuttle-gateway"
+    depends_on:
+      - sshuttle-gateway
